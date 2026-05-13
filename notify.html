@@ -9,452 +9,819 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Notify" />
   <link rel="manifest" href="notify-manifest.json" />
-  <title>Notify – Reminder App</title>
+  <title>Notify</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg:        #080d17;
+      --surface:   #0f1624;
+      --surface2:  #151d2e;
+      --border:    #1e2a3d;
+      --border2:   #263348;
+      --primary:   #6366f1;
+      --primary-d: #4f46e5;
+      --text:      #e8edf5;
+      --text-muted:#6b7a99;
+      --text-dim:  #3d4d6a;
+      --cat-personal: #3b82f6;
+      --cat-work:     #f59e0b;
+      --cat-health:   #10b981;
+      --cat-other:    #8b5cf6;
+    }
+
+    html, body { height: 100%; }
+
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
-      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    header {
+      padding: 20px 20px 0;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
+    .count-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Category filter tabs ───────────────── */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 14px;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .tab:hover { border-color: var(--border2); color: var(--text); }
+
+    .tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .tab .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+    }
+
+    /* ── Main content ───────────────────────── */
+    main {
+      flex: 1;
+      padding: 16px 20px 100px;
+      overflow-y: auto;
+    }
+
+    /* ── Empty state ────────────────────────── */
+    .empty {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 16px 80px;
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
-      color: #f8fafc;
-    }
-
-    .subtitle {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      margin-bottom: 36px;
-    }
-
-    /* ── Add form ── */
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 28px 32px;
-      width: 100%;
-      max-width: 520px;
-      margin-bottom: 32px;
-    }
-
-    .card h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #cbd5e1;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    label {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="time"],
-    textarea {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      color: #f1f5f9;
-      font-size: 0.95rem;
-      padding: 10px 14px;
-      outline: none;
-      transition: border-color 0.15s;
-      width: 100%;
-      font-family: inherit;
-    }
-
-    input:focus, textarea:focus {
-      border-color: #6366f1;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 72px;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      justify-content: center;
+      padding: 60px 20px;
       gap: 12px;
-    }
-
-    .btn-add {
-      margin-top: 8px;
-      width: 100%;
-      padding: 12px;
-      background: #6366f1;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .btn-add:hover { background: #4f46e5; }
-    .btn-add:active { background: #4338ca; }
-
-    /* ── Reminder list ── */
-    #reminder-list {
-      width: 100%;
-      max-width: 520px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .empty-state {
+      color: var(--text-dim);
       text-align: center;
-      color: #475569;
-      font-size: 0.9rem;
-      padding: 24px 0;
     }
 
-    .reminder-item {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 16px 20px;
+    .empty-icon { font-size: 3rem; opacity: 0.4; }
+    .empty p { font-size: 0.9rem; }
+
+    /* ── Reminder card ──────────────────────── */
+    .reminder-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
       display: flex;
-      justify-content: space-between;
+      gap: 14px;
       align-items: flex-start;
-      gap: 12px;
+      transition: border-color 0.2s, background 0.2s;
       position: relative;
-      transition: border-color 0.2s;
+      overflow: hidden;
     }
 
-    .reminder-item.fired {
-      border-color: #6366f1;
-      background: #1e1b4b;
+    .reminder-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 14px 0 0 14px;
     }
 
-    .reminder-info { flex: 1; }
+    .reminder-card.cat-personal::before { background: var(--cat-personal); }
+    .reminder-card.cat-work::before     { background: var(--cat-work); }
+    .reminder-card.cat-health::before   { background: var(--cat-health); }
+    .reminder-card.cat-other::before    { background: var(--cat-other); }
 
-    .reminder-msg {
-      font-size: 1rem;
+    .reminder-card.status-past {
+      opacity: 0.55;
+    }
+
+    .reminder-card.status-due {
+      border-color: var(--primary);
+      background: #0e1230;
+    }
+
+    .card-body { flex: 1; min-width: 0; }
+
+    .card-msg {
+      font-size: 0.97rem;
       font-weight: 500;
-      color: #f1f5f9;
-      margin-bottom: 6px;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
       word-break: break-word;
     }
 
-    .reminder-time {
-      font-size: 0.8rem;
-      color: #64748b;
+    .card-meta {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 6px;
     }
 
-    .reminder-time .badge {
-      background: #0f172a;
-      border: 1px solid #334155;
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
       border-radius: 20px;
-      padding: 2px 10px;
-      font-size: 0.75rem;
-      color: #94a3b8;
+      font-size: 0.72rem;
+      font-weight: 500;
+      border: 1px solid transparent;
     }
 
-    .badge.upcoming { border-color: #6366f1; color: #a5b4fc; }
-    .badge.past     { border-color: #334155; color: #475569; }
-    .badge.due      { border-color: #f59e0b; color: #fbbf24; }
+    .pill-status-upcoming { background: #1a1f3a; border-color: #2a3060; color: #818cf8; }
+    .pill-status-due      { background: #1f1a0d; border-color: #5a3e00; color: #fbbf24; }
+    .pill-status-past     { background: var(--surface2); border-color: var(--border); color: var(--text-dim); }
 
-    .btn-remove {
-      background: none;
-      border: 1px solid #334155;
+    .pill-repeat { background: var(--surface2); border-color: var(--border); color: var(--text-muted); }
+
+    .pill-cat-personal { background: #0d1f3a; border-color: #1a3d70; color: #60a5fa; }
+    .pill-cat-work     { background: #1f1500; border-color: #5a3e00; color: #fbbf24; }
+    .pill-cat-health   { background: #062018; border-color: #0d4a30; color: #34d399; }
+    .pill-cat-other    { background: #160d2a; border-color: #3a2060; color: #c4b5fd; }
+
+    .time-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: #64748b;
+      background: var(--surface2);
+      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
-      font-size: 1rem;
-      padding: 5px 10px;
+      font-size: 0.85rem;
       transition: all 0.15s;
       flex-shrink: 0;
     }
 
-    .btn-remove:hover {
-      border-color: #ef4444;
-      color: #ef4444;
-      background: rgba(239,68,68,0.08);
+    .icon-btn:hover { border-color: var(--primary); color: var(--primary); background: #1a1f3a; }
+    .icon-btn.del:hover { border-color: #ef4444; color: #ef4444; background: #1f0d0d; }
+
+    /* ── FAB ────────────────────────────────── */
+    .fab {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      width: 56px; height: 56px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      color: #fff;
+      font-size: 1.6rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      z-index: 20;
     }
 
-    /* ── Toast notification overlay ── */
-    #toast-container {
-      position: fixed;
-      top: 24px;
-      right: 24px;
+    .fab:hover  { transform: scale(1.06); box-shadow: 0 12px 32px rgba(99,102,241,0.45); }
+    .fab:active { transform: scale(0.96); }
+
+    /* ── Modal ──────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 100;
       display: flex;
-      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 24px 24px 0 0;
+      padding: 8px 24px 40px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(.32,.72,0,1);
+    }
+
+    .overlay.open .modal { transform: translateY(0); }
+
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: var(--border2);
+      border-radius: 99px;
+      margin: 12px auto 20px;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 22px;
+      color: var(--text);
+    }
+
+    .field { margin-bottom: 16px; }
+
+    .field label {
+      display: block;
+      font-size: 0.73rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+    }
+
+    input[type=text], input[type=date], input[type=time], select, textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 11px 14px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    textarea { resize: vertical; min-height: 76px; }
+
+    select option { background: #1e293b; }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Category selector pills */
+    .cat-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cat-pill {
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .cat-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    .cat-pill.selected-personal { background: #0d1f3a; border-color: var(--cat-personal); color: #60a5fa; }
+    .cat-pill.selected-work     { background: #1f1500; border-color: var(--cat-work);     color: #fbbf24; }
+    .cat-pill.selected-health   { background: #062018; border-color: var(--cat-health);   color: #34d399; }
+    .cat-pill.selected-other    { background: #160d2a; border-color: var(--cat-other);    color: #c4b5fd; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 8px; }
+
+    .btn {
+      flex: 1;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-d); }
+    .btn-ghost { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border2); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+
+    /* ── Toast ──────────────────────────────── */
+    #toasts {
+      position: fixed;
+      top: 20px; right: 16px;
+      display: flex; flex-direction: column;
       gap: 10px;
-      z-index: 9999;
+      z-index: 999;
+      max-width: 320px;
+      width: calc(100vw - 32px);
     }
 
     .toast {
-      background: #1e1b4b;
-      border: 1px solid #6366f1;
+      background: #0e1230;
+      border: 1px solid var(--primary);
       border-radius: 14px;
-      padding: 18px 22px;
-      max-width: 340px;
-      box-shadow: 0 8px 32px rgba(99,102,241,0.25);
-      animation: slideIn 0.3s ease;
+      padding: 14px 16px;
+      box-shadow: 0 8px 32px rgba(99,102,241,0.3);
+      animation: toastIn 0.3s cubic-bezier(.32,.72,0,1);
       position: relative;
     }
 
-    .toast-title {
-      font-size: 0.75rem;
+    .toast-label {
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: #818cf8;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
-    .toast-msg {
-      font-size: 1rem;
-      font-weight: 500;
-      color: #f1f5f9;
-      margin-bottom: 6px;
+    .toast-msg  { font-size: 0.95rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .toast-time { font-size: 0.78rem; color: var(--text-muted); }
+
+    .toast-x {
+      position: absolute; top: 10px; right: 12px;
+      background: none; border: none;
+      color: var(--text-dim); cursor: pointer; font-size: 1rem;
+    }
+    .toast-x:hover { color: var(--text); }
+
+    @keyframes toastIn  { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:none; } }
+    @keyframes toastOut { from { opacity:1; transform:none; } to { opacity:0; transform:translateX(30px); } }
+
+    /* ── Section label ──────────────────────── */
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-weight: 600;
+      margin: 18px 0 8px;
     }
 
-    .toast-time {
-      font-size: 0.8rem;
-      color: #6366f1;
-    }
+    .section-label:first-child { margin-top: 0; }
 
-    .toast-close {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      background: none;
-      border: none;
-      color: #475569;
+    /* ── Scrollbar ──────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    /* ── Color scheme for input[date] ────────── */
+    input[type=date]::-webkit-calendar-picker-indicator,
+    input[type=time]::-webkit-calendar-picker-indicator {
+      filter: invert(0.7) sepia(0.3) saturate(2) hue-rotate(200deg);
       cursor: pointer;
-      font-size: 1.1rem;
-      line-height: 1;
-    }
-
-    .toast-close:hover { color: #f1f5f9; }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(40px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes slideOut {
-      from { opacity: 1; transform: translateX(0); }
-      to   { opacity: 0; transform: translateX(40px); }
     }
   </style>
 </head>
 <body>
 
-  <h1>🔔 Notify</h1>
-  <p class="subtitle">Set reminders with a date &amp; time – they pop up right here.</p>
+<!-- ── Header ───────────────────────────────── -->
+<header>
+  <div class="header-row">
+    <div class="logo">
+      <div class="logo-icon">🔔</div>
+      <h1>Notify</h1>
+    </div>
+    <span class="count-badge" id="count-badge">0 reminders</span>
+  </div>
 
-  <!-- Add reminder form -->
-  <div class="card">
-    <h2>New Reminder</h2>
+  <!-- Category filter tabs -->
+  <div class="tabs">
+    <button class="tab active" data-cat="all" onclick="setFilter('all')">All</button>
+    <button class="tab" data-cat="personal" onclick="setFilter('personal')">
+      <span class="dot" style="background:var(--cat-personal)"></span>Personal
+    </button>
+    <button class="tab" data-cat="work" onclick="setFilter('work')">
+      <span class="dot" style="background:var(--cat-work)"></span>Work
+    </button>
+    <button class="tab" data-cat="health" onclick="setFilter('health')">
+      <span class="dot" style="background:var(--cat-health)"></span>Health
+    </button>
+    <button class="tab" data-cat="other" onclick="setFilter('other')">
+      <span class="dot" style="background:var(--cat-other)"></span>Other
+    </button>
+  </div>
+</header>
+
+<!-- ── Reminder list ─────────────────────────── -->
+<main id="list-root"></main>
+
+<!-- ── FAB ──────────────────────────────────── -->
+<button class="fab" onclick="openModal()" title="New reminder">＋</button>
+
+<!-- ── Add / Edit modal ─────────────────────── -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">New Reminder</div>
+
     <div class="field">
-      <label for="msg">Message</label>
-      <textarea id="msg" placeholder="What do you want to be reminded about?"></textarea>
+      <label>Message</label>
+      <textarea id="f-msg" placeholder="What do you want to be reminded about?"></textarea>
     </div>
-    <div class="row">
+
+    <div class="row-2">
       <div class="field">
-        <label for="rdate">Date</label>
-        <input type="date" id="rdate" />
+        <label>Date</label>
+        <input type="date" id="f-date" />
       </div>
       <div class="field">
-        <label for="rtime">Time</label>
-        <input type="time" id="rtime" />
+        <label>Time</label>
+        <input type="time" id="f-time" />
       </div>
     </div>
-    <button class="btn-add" onclick="addReminder()">Add Reminder</button>
-  </div>
 
-  <!-- List -->
-  <div id="reminder-list">
-    <p class="empty-state">No reminders yet. Add one above.</p>
-  </div>
+    <div class="field">
+      <label>Repeat</label>
+      <select id="f-repeat">
+        <option value="once">Once (no repeat)</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
 
-  <!-- Toast container -->
-  <div id="toast-container"></div>
+    <div class="field">
+      <label>Category</label>
+      <div class="cat-pills" id="cat-pills">
+        <button class="cat-pill" data-val="personal" onclick="selectCat('personal')">
+          <span class="dot" style="background:var(--cat-personal)"></span>Personal
+        </button>
+        <button class="cat-pill" data-val="work" onclick="selectCat('work')">
+          <span class="dot" style="background:var(--cat-work)"></span>Work
+        </button>
+        <button class="cat-pill" data-val="health" onclick="selectCat('health')">
+          <span class="dot" style="background:var(--cat-health)"></span>Health
+        </button>
+        <button class="cat-pill" data-val="other" onclick="selectCat('other')">
+          <span class="dot" style="background:var(--cat-other)"></span>Other
+        </button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveReminder()">Add Reminder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast container ──────────────────────── -->
+<div id="toasts"></div>
 
 <script>
-  const STORAGE_KEY = 'notify_reminders';
+  // ── State ──────────────────────────────────────────
+  const KEY = 'notify_v2';
+  let reminders = load();
+  let activeFilter = 'all';
+  let editId = null;
+  let selectedCat = 'personal';
 
-  // Load from localStorage
-  let reminders = (() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
-  })();
-
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders));
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; }
   }
+  function save() { localStorage.setItem(KEY, JSON.stringify(reminders)); }
 
-  function fmt(isoStr) {
-    const d = new Date(isoStr);
+  // ── Helpers ────────────────────────────────────────
+  function uid() { return crypto.randomUUID(); }
+
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    const now = new Date();
+    const sameYear = d.getFullYear() === now.getFullYear();
     return d.toLocaleString(undefined, {
       weekday: 'short', month: 'short', day: 'numeric',
+      ...(sameYear ? {} : { year: 'numeric' }),
       hour: '2-digit', minute: '2-digit'
     });
   }
 
-  function statusBadge(isoStr) {
-    const diff = new Date(isoStr) - Date.now();
-    if (diff < -60000)  return { cls: 'past',     label: 'Past' };
-    if (diff < 60000)   return { cls: 'due',      label: 'Due now' };
-    return                     { cls: 'upcoming', label: 'Upcoming' };
+  function status(at) {
+    const diff = new Date(at) - Date.now();
+    if (diff < -60_000)  return 'past';
+    if (diff <  60_000)  return 'due';
+    return 'upcoming';
   }
 
+  function statusLabel(s) {
+    return { past: 'Past', due: 'Due now', upcoming: 'Upcoming' }[s];
+  }
+
+  function catColor(c) {
+    return { personal:'var(--cat-personal)', work:'var(--cat-work)',
+              health:'var(--cat-health)',     other:'var(--cat-other)' }[c] || 'var(--cat-other)';
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;');
+  }
+
+  const REPEAT_LABEL = { once:'', daily:'Daily', weekly:'Weekly', monthly:'Monthly' };
+
+  // ── Next occurrence for repeating reminders ────────
+  function nextOccurrence(at, repeat) {
+    const d = new Date(at);
+    if (repeat === 'daily')   d.setDate(d.getDate() + 1);
+    if (repeat === 'weekly')  d.setDate(d.getDate() + 7);
+    if (repeat === 'monthly') d.setMonth(d.getMonth() + 1);
+    return d.toISOString();
+  }
+
+  // ── Render ─────────────────────────────────────────
   function render() {
-    const list = document.getElementById('reminder-list');
-    if (reminders.length === 0) {
-      list.innerHTML = '<p class="empty-state">No reminders yet. Add one above.</p>';
+    const root = document.getElementById('list-root');
+    const visible = activeFilter === 'all'
+      ? reminders
+      : reminders.filter(r => r.cat === activeFilter);
+
+    // Update badge
+    const total = reminders.length;
+    document.getElementById('count-badge').textContent =
+      total === 1 ? '1 reminder' : `${total} reminders`;
+
+    if (visible.length === 0) {
+      root.innerHTML = `<div class="empty">
+        <div class="empty-icon">🔔</div>
+        <p>${activeFilter === 'all' ? 'No reminders yet.<br>Tap + to add one.' : 'No reminders in this category.'}</p>
+      </div>`;
       return;
     }
 
-    // Sort by datetime
-    const sorted = [...reminders].sort((a, b) => new Date(a.at) - new Date(b.at));
+    // Split into upcoming/past
+    const upcoming = visible.filter(r => status(r.at) !== 'past').sort((a,b) => new Date(a.at)-new Date(b.at));
+    const past     = visible.filter(r => status(r.at) === 'past').sort((a,b) => new Date(b.at)-new Date(a.at));
 
-    list.innerHTML = sorted.map(r => {
-      const { cls, label } = statusBadge(r.at);
-      return `
-        <div class="reminder-item ${cls === 'due' ? 'fired' : ''}" id="ri-${r.id}">
-          <div class="reminder-info">
-            <div class="reminder-msg">${escHtml(r.msg)}</div>
-            <div class="reminder-time">
-              <span>${fmt(r.at)}</span>
-              <span class="badge ${cls}">${label}</span>
-            </div>
-          </div>
-          <button class="btn-remove" onclick="removeReminder('${r.id}')" title="Remove">✕</button>
-        </div>`;
-    }).join('');
+    let html = '';
+    if (upcoming.length) {
+      html += `<div class="section-label">Upcoming</div>`;
+      html += upcoming.map(cardHtml).join('');
+    }
+    if (past.length) {
+      html += `<div class="section-label">Past</div>`;
+      html += past.map(cardHtml).join('');
+    }
+
+    root.innerHTML = html;
   }
 
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function cardHtml(r) {
+    const s = status(r.at);
+    return `
+    <div class="reminder-card cat-${r.cat} status-${s}" id="card-${r.id}">
+      <div class="card-body">
+        <div class="card-msg">${esc(r.msg)}</div>
+        <div class="card-meta">
+          <span class="time-label">${fmtDate(r.at)}</span>
+          <span class="pill pill-status-${s}">${statusLabel(s)}</span>
+          ${r.repeat !== 'once' ? `<span class="pill pill-repeat">↻ ${REPEAT_LABEL[r.repeat]}</span>` : ''}
+          <span class="pill pill-cat-${r.cat}">${r.cat[0].toUpperCase()+r.cat.slice(1)}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn" onclick="editReminder('${r.id}')" title="Edit">✎</button>
+        <button class="icon-btn del" onclick="deleteReminder('${r.id}')" title="Delete">✕</button>
+      </div>
+    </div>`;
   }
 
-  function addReminder() {
-    const msg   = document.getElementById('msg').value.trim();
-    const rdate = document.getElementById('rdate').value;
-    const rtime = document.getElementById('rtime').value;
-
-    if (!msg)   { alert('Please enter a reminder message.'); return; }
-    if (!rdate) { alert('Please pick a date.'); return; }
-    if (!rtime) { alert('Please pick a time.'); return; }
-
-    const at = new Date(`${rdate}T${rtime}`).toISOString();
-
-    reminders.push({
-      id:  crypto.randomUUID(),
-      msg,
-      at,
-      fired: false
+  // ── Filter ─────────────────────────────────────────
+  function setFilter(cat) {
+    activeFilter = cat;
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.cat === cat);
     });
-
-    save();
     render();
-
-    // Clear inputs
-    document.getElementById('msg').value   = '';
-    document.getElementById('rdate').value = '';
-    document.getElementById('rtime').value = '';
   }
 
-  function removeReminder(id) {
+  // ── CRUD ───────────────────────────────────────────
+  function deleteReminder(id) {
     reminders = reminders.filter(r => r.id !== id);
-    save();
-    render();
+    save(); render();
   }
 
-  // ── Toast ──────────────────────────────────────────────────────────────
+  function editReminder(id) {
+    const r = reminders.find(r => r.id === id);
+    if (!r) return;
+    editId = id;
+
+    const d = new Date(r.at);
+    document.getElementById('f-msg').value    = r.msg;
+    document.getElementById('f-date').value   = d.toISOString().split('T')[0];
+    document.getElementById('f-time').value   = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    document.getElementById('f-repeat').value = r.repeat;
+    selectCat(r.cat);
+
+    document.getElementById('modal-title').textContent = 'Edit Reminder';
+    document.getElementById('save-btn').textContent    = 'Save Changes';
+    openModal();
+  }
+
+  function saveReminder() {
+    const msg    = document.getElementById('f-msg').value.trim();
+    const date   = document.getElementById('f-date').value;
+    const time   = document.getElementById('f-time').value;
+    const repeat = document.getElementById('f-repeat').value;
+
+    if (!msg)  { alert('Please enter a message.'); return; }
+    if (!date) { alert('Please pick a date.'); return; }
+    if (!time) { alert('Please pick a time.'); return; }
+
+    const at = new Date(`${date}T${time}`).toISOString();
+
+    if (editId) {
+      const idx = reminders.findIndex(r => r.id === editId);
+      if (idx !== -1) {
+        reminders[idx] = { ...reminders[idx], msg, at, repeat, cat: selectedCat, fired: false };
+      }
+    } else {
+      reminders.push({ id: uid(), msg, at, repeat, cat: selectedCat, fired: false });
+    }
+
+    save(); render(); closeModal();
+  }
+
+  // ── Modal ──────────────────────────────────────────
+  function openModal() {
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+    // Reset form
+    editId = null;
+    document.getElementById('f-msg').value    = '';
+    document.getElementById('f-date').value   = new Date().toISOString().split('T')[0];
+    document.getElementById('f-time').value   = '';
+    document.getElementById('f-repeat').value = 'once';
+    selectCat('personal');
+    document.getElementById('modal-title').textContent = 'New Reminder';
+    document.getElementById('save-btn').textContent    = 'Add Reminder';
+  }
+
+  function overlayClick(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
+
+  // ── Category selector ──────────────────────────────
+  function selectCat(val) {
+    selectedCat = val;
+    document.querySelectorAll('.cat-pill').forEach(p => {
+      p.className = 'cat-pill';
+      if (p.dataset.val === val) p.classList.add(`selected-${val}`);
+    });
+  }
+
+  // ── Toast ──────────────────────────────────────────
   function showToast(r) {
-    const container = document.getElementById('toast-container');
     const el = document.createElement('div');
     el.className = 'toast';
     el.id = 'toast-' + r.id;
     el.innerHTML = `
-      <button class="toast-close" onclick="dismissToast('${r.id}')">✕</button>
-      <div class="toast-title">Reminder</div>
-      <div class="toast-msg">${escHtml(r.msg)}</div>
-      <div class="toast-time">${fmt(r.at)}</div>`;
-    container.appendChild(el);
-
-    // Auto-dismiss after 10 s
-    setTimeout(() => dismissToast(r.id), 10000);
+      <button class="toast-x" onclick="dismissToast('${r.id}')">✕</button>
+      <div class="toast-label">Reminder</div>
+      <div class="toast-msg">${esc(r.msg)}</div>
+      <div class="toast-time">${fmtDate(r.at)}</div>`;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => dismissToast(r.id), 12000);
   }
 
   function dismissToast(id) {
     const el = document.getElementById('toast-' + id);
     if (!el) return;
-    el.style.animation = 'slideOut 0.3s ease forwards';
+    el.style.animation = 'toastOut 0.3s ease forwards';
     setTimeout(() => el.remove(), 300);
   }
 
-  // ── Polling loop ───────────────────────────────────────────────────────
+  // ── Notification check loop ────────────────────────
   function checkReminders() {
-    const now = Date.now();
     let changed = false;
-
     reminders.forEach(r => {
       if (r.fired) return;
-      const due = new Date(r.at).getTime();
-      if (now >= due) {
+      if (Date.now() >= new Date(r.at).getTime()) {
         r.fired = true;
         changed = true;
         showToast(r);
-        // Browser notification if permission granted
         if (Notification.permission === 'granted') {
-          new Notification('Notify – Reminder', { body: r.msg, icon: '' });
+          new Notification('Notify', { body: r.msg });
+        }
+        // Schedule next occurrence for repeating reminders
+        if (r.repeat !== 'once') {
+          r.at    = nextOccurrence(r.at, r.repeat);
+          r.fired = false;
         }
       }
     });
-
     if (changed) { save(); render(); }
   }
 
-  // Request browser notification permission on load
+  // ── Init ───────────────────────────────────────────
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
   }
 
-  // ── Prefill today's date ───────────────────────────────────────────────
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('rdate').value = today;
+  // Prefill today
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  // Default category
+  selectCat('personal');
 
   render();
-  setInterval(checkReminders, 10000); // check every 10 s
-  checkReminders();                   // immediate check on load
+  checkReminders();
+  setInterval(checkReminders, 10000);
+  setInterval(render, 30000); // refresh badges every 30s
 
+  // ── Service Worker ─────────────────────────────────
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('notify-sw.js').catch(() => {});
   }

@@ -1,4 +1,4 @@
-const CACHE = 'notify-v1';
+const CACHE = 'notify-v2';
 const ASSETS = ['notify.html', 'notify-manifest.json'];
 
 self.addEventListener('install', e => {
