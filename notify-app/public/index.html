@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Notify" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Notify</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080d17;
+      --surface:   #0f1624;
+      --surface2:  #151d2e;
+      --border:    #1e2a3d;
+      --border2:   #263348;
+      --primary:   #6366f1;
+      --primary-d: #4f46e5;
+      --text:      #e8edf5;
+      --text-muted:#6b7a99;
+      --text-dim:  #3d4d6a;
+      --cat-personal: #3b82f6;
+      --cat-work:     #f59e0b;
+      --cat-health:   #10b981;
+      --cat-other:    #8b5cf6;
+    }
+
+    html, body { height: 100%; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    header {
+      padding: 20px 20px 0;
+      background: var(--bg);
+      position: sticky; top: 0; z-index: 10;
+    }
+
+    .header-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo h1 {
+      font-size: 1.3rem; font-weight: 700;
+      letter-spacing: -0.3px; color: var(--text);
+    }
+
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #374151; display: inline-block;
+      margin-right: 6px; transition: background 0.3s;
+    }
+    .status-dot.on { background: #10b981; }
+
+    .count-badge {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 0.75rem; color: var(--text-muted);
+      display: flex; align-items: center;
+    }
+
+    .tabs {
+      display: flex; gap: 6px; overflow-x: auto;
+      padding-bottom: 14px; scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0; padding: 6px 14px;
+      border-radius: 20px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted);
+      font-size: 0.8rem; font-weight: 500; cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tab:hover { border-color: var(--border2); color: var(--text); }
+    .tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .tab .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    main { flex: 1; padding: 16px 20px 100px; overflow-y: auto; }
+
+    .empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 20px; gap: 12px;
+      color: var(--text-dim); text-align: center;
+    }
+    .empty-icon { font-size: 3rem; opacity: 0.4; }
+    .empty p { font-size: 0.9rem; }
+
+    .reminder-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; margin-bottom: 10px;
+      display: flex; gap: 14px; align-items: flex-start;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative; overflow: hidden;
+    }
+
+    .reminder-card::before {
+      content: ''; position: absolute;
+      left: 0; top: 0; bottom: 0; width: 3px;
+      border-radius: 14px 0 0 14px;
+    }
+    .reminder-card.cat-personal::before { background: var(--cat-personal); }
+    .reminder-card.cat-work::before     { background: var(--cat-work); }
+    .reminder-card.cat-health::before   { background: var(--cat-health); }
+    .reminder-card.cat-other::before    { background: var(--cat-other); }
+
+    .reminder-card.status-past   { opacity: 0.55; }
+    .reminder-card.status-due    { border-color: var(--primary); background: #0e1230; }
+
+    .card-body { flex: 1; min-width: 0; }
+
+    .card-msg {
+      font-size: 0.97rem; font-weight: 500; color: var(--text);
+      margin-bottom: 8px; line-height: 1.4; word-break: break-word;
+    }
+
+    .card-meta {
+      display: flex; flex-wrap: wrap;
+      align-items: center; gap: 6px;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 500;
+      border: 1px solid transparent;
+    }
+
+    .pill-status-upcoming { background: #1a1f3a; border-color: #2a3060; color: #818cf8; }
+    .pill-status-due      { background: #1f1a0d; border-color: #5a3e00; color: #fbbf24; }
+    .pill-status-past     { background: var(--surface2); border-color: var(--border); color: var(--text-dim); }
+    .pill-repeat          { background: var(--surface2); border-color: var(--border); color: var(--text-muted); }
+    .pill-cat-personal    { background: #0d1f3a; border-color: #1a3d70; color: #60a5fa; }
+    .pill-cat-work        { background: #1f1500; border-color: #5a3e00; color: #fbbf24; }
+    .pill-cat-health      { background: #062018; border-color: #0d4a30; color: #34d399; }
+    .pill-cat-other       { background: #160d2a; border-color: #3a2060; color: #c4b5fd; }
+
+    .time-label { font-size: 0.78rem; color: var(--text-muted); }
+
+    .card-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface2); color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.85rem; transition: all 0.15s;
+    }
+    .icon-btn:hover         { border-color: var(--primary); color: var(--primary); background: #1a1f3a; }
+    .icon-btn.del:hover     { border-color: #ef4444; color: #ef4444; background: #1f0d0d; }
+
+    .fab {
+      position: fixed; bottom: 28px; right: 24px;
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none; color: #fff; font-size: 1.6rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      transition: transform 0.15s, box-shadow 0.15s; z-index: 20;
+    }
+    .fab:hover  { transform: scale(1.06); box-shadow: 0 12px 32px rgba(99,102,241,0.45); }
+    .fab:active { transform: scale(0.96); }
+
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+      z-index: 100; display: flex;
+      align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 24px 24px 0 0;
+      padding: 8px 24px 40px; width: 100%;
+      max-width: 520px; max-height: 92vh; overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(.32,.72,0,1);
+    }
+    .overlay.open .modal { transform: translateY(0); }
+
+    .modal-handle {
+      width: 40px; height: 4px; background: var(--border2);
+      border-radius: 99px; margin: 12px auto 20px;
+    }
+
+    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 22px; color: var(--text); }
+
+    .field { margin-bottom: 16px; }
+
+    .field label {
+      display: block; font-size: 0.73rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-muted); margin-bottom: 7px;
+    }
+
+    input[type=text], input[type=date], input[type=time], select, textarea {
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border2); border-radius: 10px;
+      color: var(--text); font-size: 0.95rem; padding: 11px 14px;
+      outline: none; font-family: inherit; transition: border-color 0.15s;
+      appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    textarea { resize: vertical; min-height: 76px; }
+    select option { background: #1e293b; }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .cat-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .cat-pill {
+      padding: 7px 16px; border-radius: 20px;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: var(--text-muted); font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .cat-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .cat-pill.selected-personal { background: #0d1f3a; border-color: var(--cat-personal); color: #60a5fa; }
+    .cat-pill.selected-work     { background: #1f1500; border-color: var(--cat-work);     color: #fbbf24; }
+    .cat-pill.selected-health   { background: #062018; border-color: var(--cat-health);   color: #34d399; }
+    .cat-pill.selected-other    { background: #160d2a; border-color: var(--cat-other);    color: #c4b5fd; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 8px; }
+
+    .btn {
+      flex: 1; padding: 13px; border-radius: 12px;
+      font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; border: none; transition: all 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-d); }
+    .btn-ghost {
+      background: var(--surface2); color: var(--text-muted);
+      border: 1px solid var(--border2);
+    }
+    .btn-ghost:hover { color: var(--text); }
+
+    .section-label {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-dim); font-weight: 600; margin: 18px 0 8px;
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    input[type=date]::-webkit-calendar-picker-indicator,
+    input[type=time]::-webkit-calendar-picker-indicator {
+      filter: invert(0.7) sepia(0.3) saturate(2) hue-rotate(200deg);
+      cursor: pointer;
+    }
+
+    /* notification permission banner */
+    .notif-banner {
+      background: #1e1b4b; border: 1px solid #4f46e5;
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; font-size: 0.85rem; color: #a5b4fc;
+    }
+    .notif-banner button {
+      background: var(--primary); color: #fff; border: none;
+      border-radius: 8px; padding: 6px 14px; font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="logo">
+      <div class="logo-icon">🔔</div>
+      <h1>Notify</h1>
+    </div>
+    <span class="count-badge" id="count-badge">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="count-text">0 reminders</span>
+    </span>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-cat="all"      onclick="setFilter('all')">All</button>
+    <button class="tab" data-cat="personal" onclick="setFilter('personal')">
+      <span class="dot" style="background:var(--cat-personal)"></span>Personal
+    </button>
+    <button class="tab" data-cat="work"     onclick="setFilter('work')">
+      <span class="dot" style="background:var(--cat-work)"></span>Work
+    </button>
+    <button class="tab" data-cat="health"   onclick="setFilter('health')">
+      <span class="dot" style="background:var(--cat-health)"></span>Health
+    </button>
+    <button class="tab" data-cat="other"    onclick="setFilter('other')">
+      <span class="dot" style="background:var(--cat-other)"></span>Other
+    </button>
+  </div>
+</header>
+
+<main id="list-root"></main>
+
+<button class="fab" onclick="openModal()" title="New reminder">＋</button>
+
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">New Reminder</div>
+
+    <div class="field">
+      <label>Message</label>
+      <textarea id="f-msg" placeholder="What do you want to be reminded about?"></textarea>
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="f-date" />
+      </div>
+      <div class="field">
+        <label>Time</label>
+        <input type="time" id="f-time" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Repeat</label>
+      <select id="f-repeat">
+        <option value="once">Once (no repeat)</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Category</label>
+      <div class="cat-pills">
+        <button class="cat-pill" data-val="personal" onclick="selectCat('personal')">
+          <span class="dot" style="background:var(--cat-personal)"></span>Personal
+        </button>
+        <button class="cat-pill" data-val="work" onclick="selectCat('work')">
+          <span class="dot" style="background:var(--cat-work)"></span>Work
+        </button>
+        <button class="cat-pill" data-val="health" onclick="selectCat('health')">
+          <span class="dot" style="background:var(--cat-health)"></span>Health
+        </button>
+        <button class="cat-pill" data-val="other" onclick="selectCat('other')">
+          <span class="dot" style="background:var(--cat-other)"></span>Other
+        </button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveReminder()">Add Reminder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let reminders    = [];
+  let activeFilter = 'all';
+  let editId       = null;
+  let selectedCat  = 'personal';
+
+  // ── Helpers ──────────────────────────────────────────
+  function fmtDate(iso) {
+    const d = new Date(iso), now = new Date();
+    return d.toLocaleString(undefined, {
+      weekday: 'short', month: 'short', day: 'numeric',
+      ...(d.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}),
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function status(at) {
+    const diff = new Date(at) - Date.now();
+    if (diff < -60000) return 'past';
+    if (diff < 60000)  return 'due';
+    return 'upcoming';
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  const STATUS_LABEL  = { past:'Past', due:'Due now', upcoming:'Upcoming' };
+  const REPEAT_LABEL  = { once:'', daily:'Daily', weekly:'Weekly', monthly:'Monthly' };
+
+  // ── API ──────────────────────────────────────────────
+  async function apiFetch(path, opts = {}) {
+    const res = await fetch(path, {
+      headers: { 'Content-Type': 'application/json' },
+      ...opts
+    });
+    return res.json();
+  }
+
+  async function loadReminders() {
+    reminders = await apiFetch('/api/reminders');
+    render();
+  }
+
+  // ── Render ───────────────────────────────────────────
+  function render() {
+    const root    = document.getElementById('list-root');
+    const visible = activeFilter === 'all'
+      ? reminders
+      : reminders.filter(r => r.cat === activeFilter);
+
+    const total = reminders.length;
+    document.getElementById('count-text').textContent =
+      total === 1 ? '1 reminder' : total + ' reminders';
+
+    if (visible.length === 0) {
+      root.innerHTML = '<div class="empty"><div class="empty-icon">🔔</div><p>' +
+        (activeFilter === 'all'
+          ? 'No reminders yet.<br>Tap + to add one.'
+          : 'No reminders in this category.') +
+        '</p></div>';
+      return;
+    }
+
+    const upcoming = visible.filter(r => status(r.at) !== 'past')
+                            .sort((a,b) => new Date(a.at) - new Date(b.at));
+    const past     = visible.filter(r => status(r.at) === 'past')
+                            .sort((a,b) => new Date(b.at) - new Date(a.at));
+
+    let html = '';
+    if (upcoming.length) {
+      html += '<div class="section-label">Upcoming</div>' + upcoming.map(cardHtml).join('');
+    }
+    if (past.length) {
+      html += '<div class="section-label">Past</div>' + past.map(cardHtml).join('');
+    }
+    root.innerHTML = html;
+  }
+
+  function cardHtml(r) {
+    const s = status(r.at);
+    return `<div class="reminder-card cat-${r.cat} status-${s}">
+      <div class="card-body">
+        <div class="card-msg">${esc(r.msg)}</div>
+        <div class="card-meta">
+          <span class="time-label">${fmtDate(r.at)}</span>
+          <span class="pill pill-status-${s}">${STATUS_LABEL[s]}</span>
+          ${r.repeat !== 'once' ? `<span class="pill pill-repeat">&#x21BB; ${REPEAT_LABEL[r.repeat]}</span>` : ''}
+          <span class="pill pill-cat-${r.cat}">${r.cat[0].toUpperCase()+r.cat.slice(1)}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn"     onclick='editReminder(${JSON.stringify(r)})' title="Edit">&#x270E;</button>
+        <button class="icon-btn del" onclick="deleteReminder('${r.id}')" title="Delete">&#x2715;</button>
+      </div>
+    </div>`;
+  }
+
+  // ── Filter ───────────────────────────────────────────
+  function setFilter(cat) {
+    activeFilter = cat;
+    document.querySelectorAll('.tab').forEach(t =>
+      t.classList.toggle('active', t.dataset.cat === cat));
+    render();
+  }
+
+  // ── CRUD ─────────────────────────────────────────────
+  async function deleteReminder(id) {
+    await apiFetch('/api/reminders/' + id, { method: 'DELETE' });
+    reminders = reminders.filter(r => r.id !== id);
+    render();
+  }
+
+  function editReminder(r) {
+    editId = r.id;
+    const d = new Date(r.at);
+    document.getElementById('f-msg').value    = r.msg;
+    document.getElementById('f-date').value   = d.toISOString().split('T')[0];
+    document.getElementById('f-time').value   =
+      String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    document.getElementById('f-repeat').value = r.repeat;
+    selectCat(r.cat);
+    document.getElementById('modal-title').textContent = 'Edit Reminder';
+    document.getElementById('save-btn').textContent    = 'Save Changes';
+    openModal();
+  }
+
+  async function saveReminder() {
+    const msg    = document.getElementById('f-msg').value.trim();
+    const date   = document.getElementById('f-date').value;
+    const time   = document.getElementById('f-time').value;
+    const repeat = document.getElementById('f-repeat').value;
+
+    if (!msg)  { alert('Please enter a message.'); return; }
+    if (!date) { alert('Please pick a date.'); return; }
+    if (!time) { alert('Please pick a time.'); return; }
+
+    const body = { msg, at: new Date(date + 'T' + time).toISOString(), repeat, cat: selectedCat };
+
+    if (editId) {
+      const updated = await apiFetch('/api/reminders/' + editId, {
+        method: 'PUT', body: JSON.stringify(body)
+      });
+      reminders = reminders.map(r => r.id === editId ? updated : r);
+    } else {
+      const created = await apiFetch('/api/reminders', {
+        method: 'POST', body: JSON.stringify(body)
+      });
+      reminders.push(created);
+    }
+
+    render();
+    closeModal();
+  }
+
+  // ── Modal ────────────────────────────────────────────
+  function openModal()  { document.getElementById('overlay').classList.add('open'); }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+    editId = null;
+    document.getElementById('f-msg').value    = '';
+    document.getElementById('f-date').value   = new Date().toISOString().split('T')[0];
+    document.getElementById('f-time').value   = '';
+    document.getElementById('f-repeat').value = 'once';
+    selectCat('personal');
+    document.getElementById('modal-title').textContent = 'New Reminder';
+    document.getElementById('save-btn').textContent    = 'Add Reminder';
+  }
+
+  function overlayClick(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
+
+  function selectCat(val) {
+    selectedCat = val;
+    document.querySelectorAll('.cat-pill').forEach(p => {
+      p.className = 'cat-pill';
+      if (p.dataset.val === val) p.classList.add('selected-' + val);
+    });
+  }
+
+  // ── Push notifications ────────────────────────────────
+  function urlB64ToUint8(b64) {
+    const pad = '='.repeat((4 - b64.length % 4) % 4);
+    const raw = atob((b64 + pad).replace(/-/g,'+').replace(/_/g,'/'));
+    return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+  }
+
+  async function initPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+    const reg  = await navigator.serviceWorker.register('/sw.js');
+    const perm = await Notification.requestPermission();
+
+    document.getElementById('status-dot').classList.toggle('on', perm === 'granted');
+
+    if (perm !== 'granted') {
+      // Show banner prompting the user
+      const banner = document.createElement('div');
+      banner.className = 'notif-banner';
+      banner.innerHTML = '<span>🔕 Notifications are off — you won\'t get alerts.</span>' +
+        '<button onclick="initPush()">Enable</button>';
+      document.getElementById('list-root').prepend(banner);
+      return;
+    }
+
+    try {
+      const { key } = await apiFetch('/api/key');
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlB64ToUint8(key)
+      });
+      await apiFetch('/api/subscribe', { method: 'POST', body: JSON.stringify(sub) });
+    } catch (e) {
+      console.warn('Push subscribe failed:', e);
+    }
+  }
+
+  // ── Init ─────────────────────────────────────────────
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  selectCat('personal');
+
+  loadReminders();
+  setInterval(loadReminders, 30000); // refresh list every 30s
+  initPush();
+</script>
+</body>
+</html>
