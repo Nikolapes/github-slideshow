@@ -89,17 +89,36 @@ ENTRY CHECKLIST sve to spaja u jednu odluku
 Provjeri prvo: vidi li se VPVR / Volume Profile / anchored volume profile na chartu?
 
 ## Slučaj A — VPVR NIJE na chartu
-Daj korisniku **konkretnu uputu gdje da ga postavi**. Anker biraš prema tome šta vidiš na chartu:
+Daj korisniku **konkretnu uputu gdje da ga postavi**. Anker biraš prema tome šta vidiš na chartu.
 
-| Šta vidiš | Anker koji preporučuješ | Šta će vidjeti |
+### OBAVEZNO: broji svijeće od trenutne (krajnje desne) unazad
+
+Korisnik gleda chart i ne zna šta misliš pod "swing low" ako mu ne kažeš TAČAN BROJ svijeća. Zato uvijek:
+
+1. **Prebroji svijeće od trenutne (krajnje desne, najnovije) unazad** do ankerne svijeće. Daj broj.
+2. **Opiši kako ta svijeća izgleda** da je korisnik može vizualno potvrditi (boja, dužina fitilja, tijelo).
+3. **Reci približnu cijenu te svijeće** sa Y-ose ako je čitljiva.
+
+**Pravilan format upute:**
+> *"Postavi Anchored Volume Profile (TradingView → Indicators → "Anchored Volume Profile") počevši od **N-te svijeće** brojano od trenutne (krajnje desne) unazad. Ta svijeća je **[boja]** sa **[opis: dugi donji fitilj / veliko tijelo / sweep wick / itd.]**, na cijeni **~X**. Vuci anker do trenutne svijeće."*
+
+**Primjer dobre upute:**
+> *"Postavi Anchored VP počevši od **47. svijeće** brojano od trenutne unazad. To je zelena svijeća sa dugim donjim fitiljem (sweep wick), low ~41.850, close ~42.200. Vuci do trenutne. Vidjet ćeš POC akumulacije nakon sweepa SSL-a."*
+
+**Loš primjer (NE radi ovako):**
+> ❌ *"Postavi VP od swing lowa do sad"* — koji swing low? Korisnik mora znati TAČNO.
+
+### Anker biraš prema sceni
+
+| Šta vidiš | Anker (N svijeća unazad) | Šta će vidjeti |
 |---|---|---|
-| Jasan swing low pa rast | Anchored VP od tog swing lowa do sad | gdje su kupci akumulirali na dnu, POC akumulacije |
-| Svjež bullish CHoCH (HTF) | Anchored VP od CHoCH svijeće do sad | volume distribucija u novom uptrendu |
-| Range/konsolidaciju | Fixed Range VP preko cijelog rangea | POC, VAH, VAL — gdje će biti reakcija na proboj |
-| Likvidacijski sweep (dug fitilj) | Anchored VP od sweep svijeće do sad | dokaz ko je preuzeo nakon sweepa |
-| HTF (4H/1D) chart bez očitog pivota | VPVR za zadnjih 7 dana (intraday) ili 30 dana (swing) | širi kontekst HVN/LVN klastera |
+| Jasan swing low pa rast | N = broj svijeća od trenutne do dna (dugi donji fitilj) | POC akumulacije na dnu |
+| Svjež bullish CHoCH (HTF) | N = broj svijeća do CHoCH svijeće (prva koja je probila prethodni LH gore) | distribucija u novom uptrendu |
+| Range/konsolidacija | Fixed Range VP — N = broj svijeća od početka rangea | POC, VAH, VAL rangea |
+| Likvidacijski sweep (dug fitilj) | N = broj svijeća do sweep svijeće | ko je preuzeo nakon sweepa |
+| HTF (4H/1D) bez očitog pivota | N = ~42 svijeće (7 dana na 4H) ili ~30 (30 dana na 1D) | širi HVN/LVN kontekst |
 
-Format upute: *"Postavi Anchored Volume Profile (TradingView → indicators → Anchored VWAP/Volume Profile) od svijeće u [datum/sat ili relativno: '5 svijeća lijevo od trenutne'] do trenutne svijeće. Tako ćeš vidjeti POC akumulacije."*
+Ako ne možeš precizno prebrojiti (npr. chart je previše zumiran in/out), reci tačno: *"ne mogu pouzdano prebrojiti svijeće — približno N ± 3"* i opiši vizualne karakteristike svijeće što detaljnije.
 
 Nakon toga: **NE daješ trade plan**. Vraćaš status: **ČEKAJ VPVR** i tražiš novi screenshot s VPVR-om.
 
@@ -179,7 +198,7 @@ Drži ukupno ispod ~1900 znakova. Budi konkretan i specifičan, ne generički.
 
 **Postavi VPVR ovako:**
 - **Tip:** Anchored Volume Profile / Fixed Range VP (TradingView → Indicators → "Volume Profile")
-- **Anker:** <konkretno: "od svijeće na ~[datum/sat ili relativna pozicija na chartu] do trenutne svijeće" — ili "Fixed Range preko zadnjih N svijeća / 7 dana / 30 dana">
+- **Anker:** <OBAVEZNO tačan broj svijeća: "počevši od N-te svijeće brojano od trenutne (krajnje desne) unazad". Dodaj opis ankerne svijeće: boja, fitilj, tijelo. Dodaj približnu cijenu te svijeće sa Y-ose.>
 - **Zašto baš tu:** <jedna rečenica — npr. "želim vidjeti gdje su kupci akumulirali nakon sweepa SSL-a">
 
 **Šta tražim u VPVR-u kad ga pošalješ:**
