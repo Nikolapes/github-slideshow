@@ -6,7 +6,7 @@
 ## Faza 1 — Pročitano (temelj, čuvaj kao referencu)
 - [Atomic Habits — James Clear](#-atomic-habits--james-clear)
 - [Cybernetics — Norbert Wiener](#-cybernetics--norbert-wiener)
-- [⚠️ "Psychology" — koja tačno? (TBD)](#-psychology--koja-tačno-tbd)
+- [Psycho-Cybernetics — Maxwell Maltz](#-psycho-cybernetics--maxwell-maltz)
 - [48 Laws of Power — Robert Greene](#-48-laws-of-power--robert-greene)
 - [Deep Work — Cal Newport](#-deep-work--cal-newport)
 - [Ultralearning — Scott Young](#-ultralearning--scott-young)
@@ -146,26 +146,56 @@ Ako sistem ne radi: provjeri svaku strelicu. Najčešće: feedback je netačan i
 
 ---
 
-# ⚠️ "Psychology" — koja tačno? (TBD)
+# 🪞 Psycho-Cybernetics — Maxwell Maltz
 
-**Status:** PROČITANO • **Tip:** Psihologija • **TREBA SUMMARY**
+**Status:** PROČITANO • **Tip:** Self-Image / Performance Psychology • **Direktan nastavak Cybernetics-a**
 
-Rekao si da si pročitao knjigu vezanu za psihologiju ali nisi specificirao koju. Najčešći kandidati za biznis/self-improvement kontekst koji ide uz tvoj raster (Cybernetics + Laws of Power + Deep Work):
+## Centralna teza
+Mozak ti je goal-seeking **servomehanizam** (kibernetski sistem). Daj mu jasnu metu + opuštenost + jasnu samosliku → automatski navigira ka njoj kao termostat ka temperaturi. Promijeniš samosliku → mijenjaš sve. Bez nje sva ostala tehnika je beskorisna.
 
-| Knjiga | Autor | Zašto bi pristajalo |
-|---|---|---|
-| **Psycho-Cybernetics** | Maxwell Maltz | Direktan nastavak Cybernetics-a Wienera; samoslika kao feedback sistem |
-| **Influence: The Psychology of Persuasion** | Robert Cialdini | 6 principa utjecaja — odlično prije Laws of Power |
-| **Predictably Irrational** | Dan Ariely | Iracionalni biasovi u svakodnevnim odlukama |
-| **Thinking, Fast and Slow** | Daniel Kahneman | System 1 vs 2 (već imam u "sljedeće") |
-| **The Subtle Art of Not Giving a F\*ck** | Mark Manson | Vrijednosti + filtriranje briga |
-| **12 Rules for Life** | Jordan Peterson | Klinička psihologija + smisao |
-| **Power of Now** | Eckhart Tolle | Prezenca, ego kao iluzija |
+## Glavne lekcije
+- **Self-image je glavni regulator.** Sve što kažeš sebi "ne mogu" je samoslika, ne stvarnost. Samoslika postavlja gornju granicu performansa.
+- **Mozak ne razlikuje stvarno iskustvo od vividno zamišljenog.** Vizualiziraj uspjeh u "theatre of the mind" — neurosistem reagira kao da se desilo. Ovo je naučna baza vizualizacije, ne new-age trik.
+- **Success mechanism vs Failure mechanism.** Oba su navike. **Failure mechanism** (FEAR — Frustration, Aggression, Insecurity, Loneliness, Uncertainty, Resentment, Emptiness) sabotira automatski. **Success mechanism** (Sense of direction, Understanding, Courage, Charity, Esteem, Self-confidence, Self-acceptance) navigira ka cilju.
+- **Relaksacija je preduvjet.** Napet sistem ne može pratiti cilj — kao termostat koji svaku sekundu mijenja vrijednost.
+- **21 dana** je minimum za promjenu samoslike (Maltz je popularizirao ovo pravilo).
+- **Prošli neuspjesi su podaci, ne identitet.** "Failure" je informacija servomehanizmu da promijeni kurs, ne presuda nad tobom.
 
-**TO-DO:** Reci mi tačan naslov i autora — ažuriram ovaj odjeljak punim summary-jem u istom stilu kao ostale. Ako ne znaš tačan naslov, opiši o čemu je bila (centralna teza ili autor) pa ću pogoditi.
+## Mentalni alat (framework)
+```
+Tvoj mozak = servomehanizam (kao autopilot aviona):
+    Cilj (jasan i specifičan)
+       │
+       ▼
+    Akcija (automatska, kad je samoslika usklađena)
+       │
+       ▼
+    Feedback (mjeriš odstupanje)
+       │
+       ▼
+    Korekcija (mehanička, NE emocionalna)
+       │
+       └──→ povratak na Cilj
+```
+Kad se kompliciraš ili ulaziš u "trebao bih bolje" — sabotiraš sistem. Pust feedback radi.
 
-## Povezano (placeholder)
-- TBD nakon što potvrdiš naslov
+## Kako primijeniti
+- **Dnevna mentalna kino-vježba (15 min):** zatvori oči, vizualiziraj sebe kako TAČNO i USPJEŠNO radiš ono što treniraš (savršeni trade, savršen razgovor, savršena prezentacija). Neurološki gradiš novu samosliku.
+- **Failure → reset, ne ruminacija.** Kad pogriješiš (trade, razgovor, kod), zapiši CO je krenulo loše (mehanički), pa pređi. Bez emocionalnog ponavljanja.
+- **Samoslika audit:** "Tko ja mislim da sam kao trader/poduzetnik/partner?" Napiši odgovor. Ako je negativan ili strašljiv → identificirao si svoj plafon.
+- **Trading konkretno:** prije svakog tradinga 5 min mentalnog kina — vidiš sebe kako savršeno pratiš checklist, izlaziš na SL bez bola, slaviš plan ne profit. Samoslika "discipliniran trader" → automatske akcije.
+
+## Citati
+- "Within you right now is the power to do things you never dreamed possible."
+- "Don't try to fail-proof your life. Be willing to take risks to win the game of life."
+- "Setting goals is the first step in turning the invisible into the visible."
+
+## Povezano
+- **Cybernetics** (Maltz primjenjuje Wienera direktno na ljudski mozak — par "Cybernetics + Psycho-Cybernetics" je sveti)
+- **Atomic Habits** (samoslika = identitet → habits flow odatle)
+- **Trading in the Zone** (Mark Douglas se direktno oslanja na servomehanizam koncept)
+- **Mastery** (samoslika "majstor" mora prethoditi majstorstvu, ne obrnuto)
+- **Discourses** (Epiktet: ne kontroliraš ishod, kontroliraš sud → identično Maltzu)
 
 ---
 
