@@ -7,10 +7,18 @@ Detektira setup iz playbooka VPA-Liquidity-Sweep.md:
      close u gornjoj polovici, volumen >= 2x prosjeka 20 svijeća
   4. Brojke: SL ispod fitilja hammera, TP na prvim equal highs, R:R >= 2
 
+NE TREBA TI RAČUN NI API KLJUČ ni na jednoj burzi za skeniranje:
+čitaju se JAVNI podaci o cijenama — iste svijeće koje TradingView crta.
+EXCHANGE env varijabla bira izvor podataka (default binance; radi i
+bybit, okx, kraken, coinbase... bilo koja ccxt burza) — to je samo
+izvor javnih podataka, ne mjesto gdje imaš račun.
+
 Modovi:
   python ict_scanner.py scan  BTC/USDT           # jedan prolaz, ispiši signal
   python ict_scanner.py watch BTC/USDT ETH/USDT  # petlja: skenira svakih 60 s
   python ict_scanner.py backtest BTC/USDT        # test na povijesnim podacima
+
+Za TradingView integraciju (alerti s tvojih chartova) vidi tv_webhook.py.
 
 Paper trading je DEFAULT. Journal ide u paper_trades.json.
 Pravo izvršenje postoji samo kao eksplicitni opt-in:
