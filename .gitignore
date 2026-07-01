@@ -2,3 +2,7 @@ _site/
 .sass-cache/
 .jekyll-metadata
 .bundle
+trading-bot/.env
+trading-bot/.venv/
+trading-bot/__pycache__/
+*.pyc
