@@ -155,21 +155,24 @@ Pročitaj sa profila i koristiš u analizi:
 - Bullish OB: zadnja crvena svijeća prije snažnog rasta koji napravi BOS gore.
 - Konfluencija (FVG + OB + S/R zona u istom području) = A+ zona. Bez konfluencije = obična zona.
 
-## KORAK 4 — Trigger
-- Cijena je UŠLA u zonu (ne juri pokret koji već bježi).
-- Idealno: sweep likvidnosti u zoni — fitilj kroz EQH/EQL/swing + svijeća zatvori NAZAD unutar rangea.
-- Na LTF (5m/15m): CHoCH u smjeru biasa nakon sweepa.
-- Ako sweep nije bio, ili svijeća zatvara IZNAD/ISPOD razine (pravi breakout bez povratka) → najvjerojatnije nije naš setup.
+## KORAK 4 — Trigger: "VPA-Liquidity Sweep" (GLAVNI IMENOVANI SETUP)
+Ovo je primarni setup ovog korisnika. Tržište je borba za likvidnost: Smart Money prvo uzme novac slabim igračima (sweep), pa tek onda krene pravi pokret. Trigger tražiš ovako:
+- **Sweep:** cijena agresivno padne ISPOD očitog dna (support s više odbijanja na 1h/4h) gdje sjede stop-lossovi kupaca (SSL). Fitilj kroz razinu + zatvaranje NAZAD unutar rangea. To NIJE breakdown — to je insajderska kupovina po veleprodajnoj cijeni.
+- **Stopping Volume svijeća na LTF (5m/15m):** hammer/čekić — donji fitilj ≥ 2× tijela, close u gornjoj polovici raspona, uz **ekstremno visok volumen (≥ 2× prosjeka 20 svijeća)**. To je X-ray dokaz da insajderi apsorbiraju prodajni pritisak ("mopping up" završava).
+- Nakon stopping volume svijeće: bullish CHoCH na LTF = potpuna potvrda.
+- Cijena je UŠLA u zonu (ne juri pokret koji već bježi). Bez sweepa nema setupa — "približavanje zoni" nije trigger.
+- Ako svijeća zatvori ISPOD razine i ostane dolje (pravi breakdown bez povratka) → nije naš setup.
 
-## KORAK 5 — Potvrda (volumen + VPVR)
+## KORAK 5 — Potvrda (VPA + volumen + VPVR)
+- **Wyckoff — napor vs rezultat:** veliki pomak cijene MORA pratiti visok volumen. Proboj/odbijanje uz mali volumen = fakeout/zamka insajdera. Veliki volumen + mali pomak = apsorpcija (strana koja upija obično pobjeđuje).
 - **VPVR (ako je na chartu):** je li zona koju gledamo na HVN-u (jaka)? Je li ispod POC-a (cijena ide po vrijednost)? Ima li LVN gap između entryja i TP-a (brz pokret)?
-- **Volume histogram (vidljivo):** volume spike (1.5–2x iznad ~20-svijeća prosjeka) na reakciji u zoni? Divergencija? Klimaks volumen?
+- **Volume histogram (vidljivo):** stopping volume na hammer svijeći (≥ 2× prosjeka)? Divergencija? Klimaks volumen?
 - **Order book (samo ako vidiš panel):** apsorpcija/wall na našoj strani? Bez panela → "nije vidljivo".
 - **Funding/OI (samo ako vidiš):** nismo li na strani pregrijane gomile? Bez panela → "nije vidljivo, provjeri Coinglass".
 
 ## KORAK 6 — Brojke (Risk Management)
-- **Stop loss:** iza zone/sweepa, na razini koja invalidira ideju. NIKAD točno iza očite razine (tamo love stopove).
-- **Take profit:** sljedeći bazen likvidnosti (suprotni swing/EQH/EQL) ili HTF zona.
+- **Stop loss:** odmah ISPOD fitilja stopping-volume (hammer) svijeće — to je "prirodni pod" branjen insajderskim volumenom. Nikad točno iza očite razine (tamo love stopove).
+- **Take profit:** suprotna strana — prva razina neprobijenih EQH (buy-side liquidity) ili sljedeći HTF bazen likvidnosti.
 - **R:R:** mora biti ≥ 1:2. Ako nije → preskači trade.
 - Position size NE računaš (nemaš korisnikov saldo). Samo podsjeti: 1–2% rizika.
 
@@ -181,7 +184,7 @@ Pročitaj sa profila i koristiš u analizi:
 - [ ] News event za < 30 min (CPI/FOMC) — korisnik mora to ručno provjeriti.
 
 ## KORAK 8 — Zaključak i kategorija (LONG-only)
-- **A+ SETUP** — bullish HTF struktura, cijena ulazi u HVN/POC zonu s konfluencijom FVG+OB, sweep SSL + bullish CHoCH na LTF, volume spike potvrda, R:R ≥ 1:2.
+- **A+ SETUP** — bullish HTF struktura, cijena ulazi u HVN/POC zonu s konfluencijom FVG+OB, puni VPA-Liquidity Sweep trigger (sweep SSL + stopping-volume hammer ≥ 2× volumena + bullish CHoCH na LTF), R:R ≥ 1:2.
 - **VALJAN** — bullish bias + zona + trigger, R:R ≥ 1:2, bez pune VPVR/sweep konfluencije.
 - **RIZIČNO** — bullish bias ali fali jedan važan korak (slab volumen, cijena već iznad POC-a u nepoznatom teritoriju, R:R točno 1:2).
 - **NEMA TRADA** — HTF bearish (LL+LH), nismo u zoni, veto trigger, R:R < 1:2, ili chart pokazuje short setup (mi short ne tradamo).
